@@ -45,11 +45,11 @@ namespace WebCrawler.Service.Implementation
 
                 foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(_baseUri, node.Attributes["href"].Value) } ))
                 {
-                    if (!_processedSet.Processed(anchor))
-                    {
-                        _processedSet.Add(anchor);
-                        _uriQueue.Enqueue(anchor);
-                    }
+                    if (_processedSet.Processed(anchor))
+                        continue;
+
+                    _processedSet.Add(anchor);
+                    _uriQueue.Enqueue(anchor);
                 }
             }
             catch (Exception exception)
