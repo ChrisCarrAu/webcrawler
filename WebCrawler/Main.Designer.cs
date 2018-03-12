@@ -1,6 +1,8 @@
-﻿namespace WebCrawler
+﻿using System;
+
+namespace WebCrawler
 {
-    partial class Form1
+    partial class Main
     {
         /// <summary>
         /// Required designer variable.
@@ -28,13 +30,34 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
+            this.lbAnchors = new System.Windows.Forms.ListBox();
+            this.SuspendLayout();
+            // 
+            // lbAnchors
+            // 
+            this.lbAnchors.FormattingEnabled = true;
+            this.lbAnchors.ItemHeight = 20;
+            this.lbAnchors.Location = new System.Drawing.Point(13, 13);
+            this.lbAnchors.Name = "lbAnchors";
+            this.lbAnchors.Size = new System.Drawing.Size(775, 344);
+            this.lbAnchors.TabIndex = 0;
+            // 
+            // Main
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.lbAnchors);
+            this.Name = "Main";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Main_Load);
+            this.ResumeLayout(false);
+
         }
 
         #endregion
+
+        private System.Windows.Forms.ListBox lbAnchors;
     }
 }
 
