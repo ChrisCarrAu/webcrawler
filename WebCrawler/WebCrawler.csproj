@@ -69,7 +69,7 @@
     <Compile Include="Repository\Implementation\Unsubscriber.cs" />
     <Compile Include="Repository\Interface\IProcessedSet.cs" />
     <Compile Include="Repository\Interface\IUriQueue.cs" />
-    <Compile Include="Repository\Implementation\UriQueue.cs" />
+    <Compile Include="Repository\Implementation\ObservableUriQueue.cs" />
     <Compile Include="Service\interface\IUriQueueListener.cs" />
     <Compile Include="Service\interface\IWebCrawler.cs" />
     <Compile Include="Service\implementation\UriQueueListener.cs" />

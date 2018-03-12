@@ -11,7 +11,7 @@ namespace WebCrawler
         public override void Load()
         {
             Bind<IProcessedSet>().To<ProcessedSet>().InSingletonScope();
-            Bind<IUriQueue>().To<UriQueue>().InSingletonScope();
+            Bind<IUriQueue>().To<ObservableUriQueue>().InSingletonScope();
             Bind<IUriQueueListener>().To<UriQueueListener>();
             Bind<IWebCrawler>().To<Service.Implementation.WebCrawler>();
         }

@@ -7,12 +7,12 @@ using WebCrawler.Repository.Interface;
 
 namespace WebCrawler.Repository.Implementation
 {
-    internal class UriQueue : IUriQueue, IObservable<Anchor>
+    internal class ObservableUriQueue : IUriQueue, IObservable<Anchor>
     {
         private readonly List<IObserver<Anchor>> _observers;
         private readonly ConcurrentQueue<Anchor> _queue = new ConcurrentQueue<Anchor>();
 
-        public UriQueue()
+        public ObservableUriQueue()
         {
             _observers = new List<IObserver<Anchor>>();
         }
