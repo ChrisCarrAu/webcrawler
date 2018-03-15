@@ -10,13 +10,11 @@ namespace WebCrawler
 {
     internal partial class Main : Form, IObserver<Anchor>
     {
-        //private IWebCrawler _crawler;
         private IDisposable _queueSubscription;
         private IDisposable _queueListenerSubscription;
         private readonly IUriQueue _queue;
 
         private readonly StandardKernel _kernel;
-        //private readonly IUriQueueListener _queueListener;
 
         internal Main()
         {

@@ -48,13 +48,13 @@ namespace WebCrawler.Service.implementation
 
         public void OnNext(Anchor anchor)
         {
-            if (_processedSet.Processed(anchor))
+            if (_processedSet.Processed(anchor.Uri.ToString()))
                 return;
 
-            if (anchor.JumpCount > 2)
+            if (anchor.JumpCount > 5)
                 return;
 
-            _processedSet.Add(anchor);
+            _processedSet.Add(anchor.Uri.ToString());
             _uriQueue.Enqueue(anchor);
 
             // Wake up processing queue

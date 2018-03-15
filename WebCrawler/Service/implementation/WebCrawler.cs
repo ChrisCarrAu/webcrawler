@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using WebCrawler.Model;
 using WebCrawler.Repository.Implementation;
-using WebCrawler.Repository.Interface;
 using WebCrawler.Service.Interface;
 
 namespace WebCrawler.Service.Implementation
@@ -25,15 +24,28 @@ namespace WebCrawler.Service.Implementation
 
         public void Crawl(Anchor anchor)
         {
-            _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
-            _webClient.DownloadStringAsync(anchor.Uri, anchor);
+            try
+            {
+                _webClient.DownloadData(anchor.Uri);
+                var type = _webClient.ResponseHeaders["content-type"];
+
+                if (type.StartsWith(@"text/"))
+                {
+                    _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
+                    _webClient.DownloadStringAsync(anchor.Uri, anchor);
+                }
+            }
+            catch (WebException e)
+            {
+                // TODO: Handle error
+            }
         }
 
         private void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             try
             {
-                Anchor baseAnchor = (e.UserState as Anchor);
+                var baseAnchor = (e.UserState as Anchor);
 
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(e.Result);

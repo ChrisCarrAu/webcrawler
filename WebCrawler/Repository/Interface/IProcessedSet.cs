@@ -1,12 +1,9 @@
-﻿using System;
-using WebCrawler.Model;
-
-namespace WebCrawler.Repository.Interface
+﻿namespace WebCrawler.Repository.Interface
 {
     internal interface IProcessedSet
     {
-        bool Add(Anchor uri);
-        bool Processed(Anchor uri);
+        bool Add(string uri);
+        bool Processed(string uri);
 
     }
 }

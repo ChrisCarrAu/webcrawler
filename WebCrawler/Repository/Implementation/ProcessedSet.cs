@@ -7,19 +7,19 @@ namespace WebCrawler.Repository.Implementation
 {
     internal class ProcessedSet : IProcessedSet
     {
-        private readonly HashSet<Anchor> _set;
+        private readonly HashSet<string> _set;
 
         public ProcessedSet()
         {
-            _set = new HashSet<Anchor>();
+            _set = new HashSet<string>();
         }
 
-        public bool Add(Anchor uri)
+        public bool Add(string uri)
         {
             return _set.Add(uri);
         }
 
-        public bool Processed(Anchor uri)
+        public bool Processed(string uri)
         {
             return _set.Contains(uri);
         }
