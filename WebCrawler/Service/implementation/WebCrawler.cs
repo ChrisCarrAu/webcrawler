@@ -15,30 +15,26 @@ namespace WebCrawler.Service.Implementation
     internal class WebCrawler : IWebCrawler
     {
         private readonly WebClient _webClient;
-        //private readonly IUriQueue _uriQueue;
-        private Anchor _baseAnchor;
-        //private readonly IProcessedSet _processedSet;
         private readonly List<IObserver<Anchor>> _observers;
 
         public WebCrawler(/*IUriQueue uriQueue, IProcessedSet processedSet*/)
         {
             _webClient = new WebClient();
-            //_uriQueue = uriQueue;
-            //_processedSet = processedSet;
             _observers = new List<IObserver<Anchor>>();
         }
 
         public void Crawl(Anchor anchor)
         {
-            _baseAnchor = anchor;
             _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
-            _webClient.DownloadStringAsync(anchor.Uri);
+            _webClient.DownloadStringAsync(anchor.Uri, anchor);
         }
 
         private void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             try
             {
+                Anchor baseAnchor = (e.UserState as Anchor);
+
                 var htmlDocument = new HtmlDocument();
                 htmlDocument.LoadHtml(e.Result);
 
@@ -47,7 +43,7 @@ namespace WebCrawler.Service.Implementation
                 if (null == anchors)
                     return;
 
-                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(_baseAnchor.Uri, node.Attributes["href"].Value), JumpCount = _baseAnchor.JumpCount + 1 } ))
+                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(baseAnchor.Uri, node.Attributes["href"].Value), JumpCount = baseAnchor.JumpCount + 1 } ))
                 {
                     _observers.ForEach(observer => observer.OnNext(anchor));
 
