@@ -39,9 +39,9 @@ namespace WebCrawler
 
         }
 
-        public void OnNext(Anchor value)
+        public void OnNext(Anchor anchor)
         {
-            lbAnchors.Invoke(new Action(() => lbAnchors.Items.Add($"{value.JumpCount} : {value.Uri}")));
+            lbAnchors.Invoke(new Action(() => lbAnchors.Items.Add($"{anchor.JumpCount} : {anchor.Uri}")));
         }
 
         public void OnError(Exception error)

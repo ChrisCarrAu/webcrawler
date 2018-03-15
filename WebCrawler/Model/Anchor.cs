@@ -1,10 +1,42 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WebCrawler.Model
 {
     internal class Anchor
     {
         public Uri Uri { get; set; }
-        public int JumpCount { get; set; }
+
+        public Anchor Parent { get; set; }
+
+        public int JumpCount
+        {
+            get
+            {
+                var count = 0;
+                var myParent = Parent;
+                while (null != myParent)
+                {
+                    count++;
+                    myParent = myParent.Parent;
+                }
+                return count;
+            }
+        }
+
+        public List<string> Jumps
+        {
+            get
+            {
+                var jumps = new List<string> {Uri.ToString()};
+                var myParent = Parent;
+                while (null != myParent)
+                {
+                    jumps.Add(myParent.Uri.ToString());
+                    myParent = myParent.Parent;
+                }
+                return jumps;
+            }
+        }
     }
 }

@@ -11,12 +11,16 @@ namespace WebCrawler.Service.Implementation
 {
     internal delegate void LinkFound(Anchor link);
 
+    /// <summary>
+    /// Crawls a website, looking for anchors.
+    /// Implements IObservable<Uri> and returns Anchor URIs to Observers.
+    /// </summary>
     internal class WebCrawler : IWebCrawler
     {
         private readonly WebClient _webClient;
         private readonly List<IObserver<Anchor>> _observers;
 
-        public WebCrawler(/*IUriQueue uriQueue, IProcessedSet processedSet*/)
+        public WebCrawler()
         {
             _webClient = new WebClient();
             _observers = new List<IObserver<Anchor>>();
@@ -55,10 +59,9 @@ namespace WebCrawler.Service.Implementation
                 if (null == anchors)
                     return;
 
-                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(baseAnchor.Uri, node.Attributes["href"].Value), JumpCount = baseAnchor.JumpCount + 1 } ))
+                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(baseAnchor.Uri, node.Attributes["href"].Value), Parent = baseAnchor } ))
                 {
                     _observers.ForEach(observer => observer.OnNext(anchor));
-
                 }
             }
             catch (Exception exception)
