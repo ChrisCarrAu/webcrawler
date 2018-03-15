@@ -1,8 +1,10 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using WebCrawler.Model;
+using WebCrawler.Repository.Implementation;
 using WebCrawler.Repository.Interface;
 using WebCrawler.Service.Interface;
 
@@ -13,20 +15,22 @@ namespace WebCrawler.Service.Implementation
     internal class WebCrawler : IWebCrawler
     {
         private readonly WebClient _webClient;
-        private readonly IUriQueue _uriQueue;
-        private Uri _baseUri;
-        private readonly IProcessedSet _processedSet;
+        //private readonly IUriQueue _uriQueue;
+        private Anchor _baseAnchor;
+        //private readonly IProcessedSet _processedSet;
+        private readonly List<IObserver<Anchor>> _observers;
 
-        public WebCrawler(IUriQueue uriQueue, IProcessedSet processedSet)
+        public WebCrawler(/*IUriQueue uriQueue, IProcessedSet processedSet*/)
         {
             _webClient = new WebClient();
-            _uriQueue = uriQueue;
-            _processedSet = processedSet;
+            //_uriQueue = uriQueue;
+            //_processedSet = processedSet;
+            _observers = new List<IObserver<Anchor>>();
         }
 
         public void Crawl(Anchor anchor)
         {
-            _baseUri = anchor.Uri;
+            _baseAnchor = anchor;
             _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
             _webClient.DownloadStringAsync(anchor.Uri);
         }
@@ -43,19 +47,25 @@ namespace WebCrawler.Service.Implementation
                 if (null == anchors)
                     return;
 
-                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(_baseUri, node.Attributes["href"].Value) } ))
+                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(_baseAnchor.Uri, node.Attributes["href"].Value), JumpCount = _baseAnchor.JumpCount + 1 } ))
                 {
-                    if (_processedSet.Processed(anchor))
-                        continue;
+                    _observers.ForEach(observer => observer.OnNext(anchor));
 
-                    _processedSet.Add(anchor);
-                    _uriQueue.Enqueue(anchor);
                 }
             }
             catch (Exception exception)
             {
                 // TODO: Log errors somehow
             }
+        }
+
+        public IDisposable Subscribe(IObserver<Anchor> observer)
+        {
+            if (!_observers.Contains(observer))
+            {
+                _observers.Add(observer);
+            }
+            return new Unsubscriber<Anchor>(_observers, observer);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Ninject;
 using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using WebCrawler.Model;
 using WebCrawler.Repository.Interface;
@@ -11,12 +10,12 @@ namespace WebCrawler
 {
     internal partial class Main : Form, IObserver<Anchor>
     {
-        private IWebCrawler _crawler;
+        //private IWebCrawler _crawler;
         private IDisposable _queueSubscription;
         private IDisposable _queueListenerSubscription;
         private readonly IUriQueue _queue;
 
-        private StandardKernel _kernel;
+        private readonly StandardKernel _kernel;
         //private readonly IUriQueueListener _queueListener;
 
         internal Main()
@@ -36,11 +35,15 @@ namespace WebCrawler
         {
             _queue.Enqueue(new Anchor { Uri = new Uri("http://www.thegravenimage.com/controltechnology") } );
             _queue.Enqueue(new Anchor { Uri = new Uri("http://www.appthem.com") } );
+
+            var crawlFarm = _kernel.Get<ICrawlFarm>();
+            crawlFarm.Run();
+
         }
 
         public void OnNext(Anchor value)
         {
-            lbAnchors.Invoke(new Action(() => lbAnchors.Items.Add(value.Uri)));
+            lbAnchors.Invoke(new Action(() => lbAnchors.Items.Add($"{value.JumpCount} : {value.Uri}")));
         }
 
         public void OnError(Exception error)
@@ -51,6 +54,11 @@ namespace WebCrawler
         public void OnCompleted()
         {
             //
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            Close();
         }
     }
 }

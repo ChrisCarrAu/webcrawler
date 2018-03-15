@@ -1,10 +1,11 @@
 ﻿using System;
 using WebCrawler.Model;
 
+
 namespace WebCrawler.Service.Interface
 {
-    interface IWebCrawler : IObservable<Anchor>
+    interface ICrawlFarm : IObserver<Anchor>
     {
-        void Crawl(Anchor uri);
+        void Run();
     }
 }

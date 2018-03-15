@@ -29,16 +29,7 @@ namespace WebCrawler.Service.Implementation
 
         public void OnNext(Anchor value)
         {
-            if (_uriQueue.TryDequeue(out Anchor anchor))
-            {
-                var t = new Task(() =>
-                    {
-                        var crawler = new WebCrawler(_uriQueue, _processedSet); // new Service.Implementation.WebCrawler(_queue);
-                        crawler.Crawl(anchor);
-                    }
-                );
-                t.Start();
-            }
+            //
         }
     }
 }
