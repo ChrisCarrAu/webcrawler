@@ -31,9 +31,9 @@ namespace WebCrawler.Service.Implementation
             try
             {
                 _webClient.DownloadData(anchor.Uri);
-                var type = _webClient.ResponseHeaders["content-type"];
+                anchor.Headers = _webClient.ResponseHeaders;
 
-                if (type.StartsWith(@"text/"))
+                if (anchor.Headers["content-type"].StartsWith(@"text/", StringComparison.Ordinal))
                 {
                     _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
                     _webClient.DownloadStringAsync(anchor.Uri, anchor);
@@ -41,7 +41,7 @@ namespace WebCrawler.Service.Implementation
             }
             catch (WebException e)
             {
-                // TODO: Handle error
+                anchor.Exception = e;
             }
         }
 
@@ -59,9 +59,14 @@ namespace WebCrawler.Service.Implementation
                 if (null == anchors)
                     return;
 
-                foreach (var anchor in anchors.Select(node => new Anchor { Uri = new Uri(baseAnchor.Uri, node.Attributes["href"].Value), Parent = baseAnchor } ))
+                foreach (var anchor in anchors)
                 {
-                    _observers.ForEach(observer => observer.OnNext(anchor));
+                    var node = new Anchor
+                    {
+                        Uri = new Uri(baseAnchor.Uri, anchor.Attributes["href"].Value),
+                        Parent = baseAnchor
+                    };
+                    _observers.ForEach(observer => observer.OnNext(node));
                 }
             }
             catch (Exception exception)

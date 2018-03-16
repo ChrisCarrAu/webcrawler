@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace WebCrawler.Model
 {
@@ -8,6 +9,10 @@ namespace WebCrawler.Model
         public Uri Uri { get; set; }
 
         public Anchor Parent { get; set; }
+
+        public WebHeaderCollection Headers { get; set; }
+
+        public WebException Exception { get; set; }
 
         public int JumpCount
         {
