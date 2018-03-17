@@ -26,7 +26,7 @@ namespace Crawler
             //_uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.thegravenimage.com/controltechnology") });
             _uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.appthem.com") });
 
-            _crawlFarm.Run(30);
+            _crawlFarm.Run(3);
         }
 
         public void OnCompleted()

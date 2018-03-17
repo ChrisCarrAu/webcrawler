@@ -1,12 +1,14 @@
 ﻿# Web Crawler
 
-A simple web crawler that follows anchor links
+A simple web crawler that reports anchor links in real time
 
 ## Getting Started
 
-Uses Visual Studio 2017, just load the solution and run it.
+Uses Visual Studio 2017, just load the solution and run the console app, Crawler.
 
-Right now, the starting URI is hard coded.
+Right now, the starting URI & number of crawl threads are hard coded.
+
+CrawlerFarm is an observable object - Crawler implements IObserver<Anchor> and subscribes to the UriQueue which queues the Uri's to process
 
 ### Prerequisites
 
@@ -56,11 +58,9 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-<!--
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
--->
+* [HtmlAgilityPack](http://html-agility-pack.net/) - An agile HTML parser 
+* [Microsoft.Extensions.DependencyInjection](https://www.asp.net/) - Dependency Management
+* [NLog](http://nlog-project.org/) - A logging platform for .NET with rich log routing and management capabilities
 
 ## Contributing
 
@@ -74,7 +74,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Chris Carr** - *Initial work* - [appthem](https://github.com/ChrisCarrAu)
+* **Chris Carr** - *Initial work* - [ChrisCarrAu](https://github.com/ChrisCarrAu)
 
 ## License
 
