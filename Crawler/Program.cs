@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using System;
+using System.Threading.Tasks;
 
 namespace Crawler
 {
@@ -18,10 +19,17 @@ namespace Crawler
             var servicesProvider = BuildDi();
             var crawler = servicesProvider.GetRequiredService<Crawler>();
 
-            crawler.Crawl().Wait();
+            Task.Factory.StartNew(async () =>
+            {
+                await crawler.Crawl();
+            }).ContinueWith(task =>
+            {
+                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
+                NLog.LogManager.Shutdown();
+            });
 
-            // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-            NLog.LogManager.Shutdown();
+            Console.WriteLine("Press any key...");
+            Console.ReadLine();
         }
 
         private static IServiceProvider BuildDi()
