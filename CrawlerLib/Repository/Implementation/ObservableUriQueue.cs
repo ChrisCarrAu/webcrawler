@@ -27,6 +27,8 @@ namespace Crawler.Lib.Repository.Implementation
             return _queue.TryDequeue(out uri);
         }
 
+        public bool IsEmpty => _queue.IsEmpty;
+
         public IDisposable Subscribe(IObserver<Anchor> observer)
         {
             if (!_observers.Contains(observer))

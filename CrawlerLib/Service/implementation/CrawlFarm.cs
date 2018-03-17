@@ -20,7 +20,15 @@ namespace Crawler.Lib.Service.implementation
 
         private readonly ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
 
-        public CrawlFarm(ILogger<CrawlFarm> logger, IServiceProvider serviceProvider, IUriQueue uriQueue, IProcessedSet processedSet)
+        private int _activeCrawlers;
+
+        public CrawlFarm
+        (
+            ILogger<CrawlFarm> logger, 
+            IServiceProvider   serviceProvider, 
+            IUriQueue          uriQueue, 
+            IProcessedSet      processedSet
+        )
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -32,23 +40,28 @@ namespace Crawler.Lib.Service.implementation
         {
             _logger.LogDebug($"Beginning Web Crawl");
             _logger.LogDebug($"Maximum Degree Of Parallelism = {maxDegreeOfParallelism}");
+
             var crawl = new ActionBlock<Anchor>(
                 anchor =>
                 {
                     var crawler = ActivatorUtilities.CreateInstance<WebCrawler>(_serviceProvider);
+                    var count = Interlocked.Increment(ref _activeCrawlers);
+                    _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
                     crawler.Subscribe(this);
                     crawler.Crawl(anchor);
                 },
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism } );
 
-            while (true)
+            while (!_uriQueue.IsEmpty || _activeCrawlers != 0)
             {
                 while (_uriQueue.TryDequeue(out var anchor))
                 {
-                    crawl.Post(anchor);
+                    if (true)   // TODO: Should we crawl this one?
+                    {
+                        crawl.Post(anchor);
+                    }
                 }
-                Thread.Sleep(500);
-                _manualResetEvent.WaitOne();
+                _manualResetEvent.WaitOne(500);
             }
         }
 
@@ -57,7 +70,7 @@ namespace Crawler.Lib.Service.implementation
             if (_processedSet.Processed(anchor.Uri.ToString()))
                 return;
 
-            if (anchor.JumpCount > 5)
+            if (anchor.JumpCount > 2)
                 return;
 
             _processedSet.Add(anchor.Uri.ToString());
@@ -69,12 +82,13 @@ namespace Crawler.Lib.Service.implementation
 
         public void OnError(Exception error)
         {
-            //
+            _logger.LogError($"{error.ToString()}");
         }
 
         public void OnCompleted()
         {
-            //
+            var count = Interlocked.Decrement(ref _activeCrawlers);
+            _logger.LogDebug($"  -- DECREMEMT, Crawl Count = {count}");
         }
     }
 }

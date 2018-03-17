@@ -47,10 +47,14 @@ namespace Crawler.Lib.Service.Implementation
             }
             catch (WebException e)
             {
+                _observers.ForEach(observer => observer.OnError(e));
+                _observers.ForEach(observer => observer.OnCompleted());
                 anchor.Exception = e;
             }
             catch (ArgumentException arge)
             {
+                _observers.ForEach(observer => observer.OnError(arge));
+                _observers.ForEach(observer => observer.OnCompleted());
                 anchor.Exception = arge;
             }
             finally
@@ -85,7 +89,11 @@ namespace Crawler.Lib.Service.Implementation
             }
             catch (Exception exception)
             {
-                // TODO: Log errors somehow
+                _observers.ForEach(observer => observer.OnError(exception));
+            }
+            finally
+            {
+                _observers.ForEach(observer => observer.OnCompleted());
             }
         }
 
