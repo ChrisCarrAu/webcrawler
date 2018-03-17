@@ -6,6 +6,7 @@ using System.Net;
 using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Implementation;
 using Crawler.Lib.Service.Interface;
+using Microsoft.Extensions.Logging;
 
 namespace Crawler.Lib.Service.Implementation
 {
@@ -20,16 +21,21 @@ namespace Crawler.Lib.Service.Implementation
         private readonly WebClient _webClient;
         private readonly List<IObserver<Anchor>> _observers;
 
-        public WebCrawler()
+        private readonly ILogger<WebCrawler> _logger;
+
+        public WebCrawler(ILogger<WebCrawler> logger)
         {
             _webClient = new WebClient();
             _observers = new List<IObserver<Anchor>>();
+
+            _logger = logger;
         }
 
         public void Crawl(Anchor anchor)
         {
             try
             {
+                _logger.LogInformation($">>> Start Crawling {anchor.Uri.ToString()}");
                 _webClient.DownloadData(anchor.Uri);
                 anchor.Headers = _webClient.ResponseHeaders;
 
@@ -42,6 +48,14 @@ namespace Crawler.Lib.Service.Implementation
             catch (WebException e)
             {
                 anchor.Exception = e;
+            }
+            catch (ArgumentException arge)
+            {
+                anchor.Exception = arge;
+            }
+            finally
+            {
+                _logger.LogInformation($">>> Crawl Complete {anchor.Uri.ToString()}");
             }
         }
 

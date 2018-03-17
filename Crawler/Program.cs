@@ -40,7 +40,7 @@ namespace Crawler
             services.AddSingleton<IProcessedSet, ProcessedSet>();
             services.AddSingleton<IUriQueue, ObservableUriQueue>();
             services.AddSingleton<IUriQueueListener, UriQueueListener>();
-            services.AddSingleton<IWebCrawler, WebCrawler>();
+            services.AddTransient<WebCrawler, WebCrawler>();
             services.AddSingleton<ICrawlFarm, CrawlFarm>();
 
             var serviceProvider = services.BuildServiceProvider();

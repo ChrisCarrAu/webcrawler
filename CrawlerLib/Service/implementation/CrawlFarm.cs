@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Interface;
+using Crawler.Lib.Service.Implementation;
 using Crawler.Lib.Service.Interface;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Crawler.Lib.Service.implementation
@@ -14,12 +16,14 @@ namespace Crawler.Lib.Service.implementation
         private readonly ILogger<CrawlFarm> _logger;
         private readonly IUriQueue _uriQueue;
         private readonly IProcessedSet _processedSet;
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
 
-        public CrawlFarm(ILogger<CrawlFarm> logger, IUriQueue uriQueue, IProcessedSet processedSet)
+        public CrawlFarm(ILogger<CrawlFarm> logger, IServiceProvider serviceProvider, IUriQueue uriQueue, IProcessedSet processedSet)
         {
             _logger = logger;
+            _serviceProvider = serviceProvider;
             _uriQueue = uriQueue;
             _processedSet = processedSet;
         }
@@ -31,11 +35,9 @@ namespace Crawler.Lib.Service.implementation
             var crawl = new ActionBlock<Anchor>(
                 anchor =>
                 {
-                    var crawler = new Implementation.WebCrawler();
+                    var crawler = ActivatorUtilities.CreateInstance<WebCrawler>(_serviceProvider);
                     crawler.Subscribe(this);
-                    _logger.LogInformation($">>> Start Crawling {anchor.Uri.ToString()}");
                     crawler.Crawl(anchor);
-                    _logger.LogInformation($">>> Crawl Complete {anchor.Uri.ToString()}");
                 },
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism } );
 

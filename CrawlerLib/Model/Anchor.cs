@@ -12,7 +12,7 @@ namespace Crawler.Lib.Model
 
         public WebHeaderCollection Headers { get; set; }
 
-        public WebException Exception { get; set; }
+        public Exception Exception { get; set; }
 
         public int JumpCount
         {

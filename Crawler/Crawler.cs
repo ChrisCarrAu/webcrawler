@@ -3,6 +3,7 @@ using Crawler.Lib.Repository.Interface;
 using Crawler.Lib.Service.Interface;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 
 namespace Crawler
 {
@@ -25,7 +26,7 @@ namespace Crawler
             //_uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.thegravenimage.com/controltechnology") });
             _uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.appthem.com") });
 
-            _crawlFarm.Run(8);
+            _crawlFarm.Run(30);
         }
 
         public void OnCompleted()
@@ -40,13 +41,15 @@ namespace Crawler
 
         public void OnNext(Anchor anchor)
         {
-            if (null == anchor.Exception)
+            var webException = anchor.Exception as WebException;
+            if (null == webException)
             {
                 Console.WriteLine($"{anchor.JumpCount} : {anchor.Uri}");
             }
             else
             {
-                Console.WriteLine($"{anchor.JumpCount} : ({anchor.Exception.Status.ToString()}) {anchor.Uri}");
+                _logger.LogError($"{webException.Status.ToString()}\n{anchor.Uri}");
+                Console.WriteLine($"{anchor.JumpCount} : ({webException.Status.ToString()}) {anchor.Uri}");
             }
         }
     }
