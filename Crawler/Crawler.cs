@@ -4,6 +4,7 @@ using Crawler.Lib.Service.Interface;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace Crawler
 {
@@ -20,13 +21,13 @@ namespace Crawler
             _uriQueue = uriQueue;
         }
 
-        public void Crawl()
+        public async Task Crawl()
         {
             _uriQueue.Subscribe(this);
             //_uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.thegravenimage.com/controltechnology") });
             _uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.appthem.com") });
 
-            _crawlFarm.Run(3);
+            await _crawlFarm.Run(3);
         }
 
         public void OnCompleted()

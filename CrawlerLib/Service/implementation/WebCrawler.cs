@@ -1,12 +1,12 @@
-﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Crawler.Lib.Model;
+﻿using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Implementation;
 using Crawler.Lib.Service.Interface;
+using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace Crawler.Lib.Service.Implementation
 {
@@ -31,68 +31,53 @@ namespace Crawler.Lib.Service.Implementation
             _logger = logger;
         }
 
-        public void Crawl(Anchor anchor)
+        public async Task Crawl(Anchor anchor)
         {
             try
             {
                 _logger.LogInformation($">>> Start Crawling {anchor.Uri.ToString()}");
-                _webClient.DownloadData(anchor.Uri);
+                var data = await _webClient.DownloadDataTaskAsync(anchor.Uri);
                 anchor.Headers = _webClient.ResponseHeaders;
 
                 if (anchor.Headers["content-type"].StartsWith(@"text/", StringComparison.Ordinal))
                 {
-                    _webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
-                    _webClient.DownloadStringAsync(anchor.Uri, anchor);
+                    var contents = await _webClient.DownloadStringTaskAsync(anchor.Uri);
+
+                    var htmlDocument = new HtmlDocument();
+                    htmlDocument.LoadHtml(contents);
+
+                    var anchors = htmlDocument.DocumentNode.SelectNodes("//a");
+
+                    if (null == anchors)
+                        return;
+
+                    foreach (var _anchor in anchors)
+                    {
+                        if (_anchor.Attributes.Contains("href"))
+                        {
+                            var node = new Anchor
+                            {
+                                Uri = new Uri(anchor.Uri, _anchor.Attributes["href"].Value),
+                                Parent = anchor
+                            };
+                            _observers.ForEach(observer => observer.OnNext(node));
+                        }
+                    }
                 }
             }
             catch (WebException e)
             {
                 _observers.ForEach(observer => observer.OnError(e));
-                _observers.ForEach(observer => observer.OnCompleted());
                 anchor.Exception = e;
             }
             catch (ArgumentException arge)
             {
                 _observers.ForEach(observer => observer.OnError(arge));
-                _observers.ForEach(observer => observer.OnCompleted());
                 anchor.Exception = arge;
             }
             finally
             {
                 _logger.LogInformation($">>> Crawl Complete {anchor.Uri.ToString()}");
-            }
-        }
-
-        private void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
-        {
-            try
-            {
-                var baseAnchor = (e.UserState as Anchor);
-
-                var htmlDocument = new HtmlDocument();
-                htmlDocument.LoadHtml(e.Result);
-
-                var anchors = htmlDocument.DocumentNode.SelectNodes("//a");
-
-                if (null == anchors)
-                    return;
-
-                foreach (var anchor in anchors)
-                {
-                    var node = new Anchor
-                    {
-                        Uri = new Uri(baseAnchor.Uri, anchor.Attributes["href"].Value),
-                        Parent = baseAnchor
-                    };
-                    _observers.ForEach(observer => observer.OnNext(node));
-                }
-            }
-            catch (Exception exception)
-            {
-                _observers.ForEach(observer => observer.OnError(exception));
-            }
-            finally
-            {
                 _observers.ForEach(observer => observer.OnCompleted());
             }
         }

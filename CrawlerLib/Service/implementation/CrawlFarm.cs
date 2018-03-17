@@ -36,21 +36,23 @@ namespace Crawler.Lib.Service.implementation
             _processedSet = processedSet;
         }
 
-        public void Run(int maxDegreeOfParallelism = 1)
+        public async Task Run(int maxDegreeOfParallelism = 1)
         {
             _logger.LogDebug($"Beginning Web Crawl");
             _logger.LogDebug($"Maximum Degree Of Parallelism = {maxDegreeOfParallelism}");
 
             var crawl = new ActionBlock<Anchor>(
-                anchor =>
+                async anchor =>
                 {
                     var crawler = ActivatorUtilities.CreateInstance<WebCrawler>(_serviceProvider);
                     var count = Interlocked.Increment(ref _activeCrawlers);
                     _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
                     crawler.Subscribe(this);
-                    crawler.Crawl(anchor);
+                    await crawler.Crawl(anchor);
                 },
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism } );
+
+            _logger.LogDebug($"Starting");
 
             while (!_uriQueue.IsEmpty || _activeCrawlers != 0)
             {
@@ -58,11 +60,13 @@ namespace Crawler.Lib.Service.implementation
                 {
                     if (true)   // TODO: Should we crawl this one?
                     {
-                        crawl.Post(anchor);
+                        await crawl.SendAsync<Anchor>(anchor);
                     }
                 }
                 _manualResetEvent.WaitOne(500);
             }
+
+            _logger.LogDebug($"Exiting - active crawlers = {_activeCrawlers}");
         }
 
         public void OnNext(Anchor anchor)

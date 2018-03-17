@@ -18,7 +18,7 @@ namespace Crawler
             var servicesProvider = BuildDi();
             var crawler = servicesProvider.GetRequiredService<Crawler>();
 
-            crawler.Crawl();
+            crawler.Crawl().Wait();
 
             // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
             NLog.LogManager.Shutdown();
