@@ -1,7 +1,5 @@
-﻿using System;
+﻿using Crawler.Lib.Repository.Interface;
 using System.Collections.Generic;
-using Crawler.Lib.Model;
-using Crawler.Lib.Repository.Interface;
 
 namespace Crawler.Lib.Repository.Implementation
 {
