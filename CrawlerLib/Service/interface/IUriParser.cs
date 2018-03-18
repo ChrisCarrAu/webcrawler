@@ -4,8 +4,8 @@ using Crawler.Lib.Model;
 
 namespace Crawler.Lib.Service.Interface
 {
-    public interface ICrawlFarm : IObserver<Anchor>
+    public interface IUriParser : IObservable<Anchor>
     {
-        Task Run(int maxDegreeOfParallelism);
+        Task Crawl(Anchor uri);
     }
 }

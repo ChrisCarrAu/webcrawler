@@ -12,40 +12,43 @@ using Microsoft.Extensions.Logging;
 
 namespace Crawler.Lib.Service.implementation
 {
-    public class CrawlFarm : ICrawlFarm
+    /// <summary>
+    /// Given a queue of Uris, crawls the queue, retrieving anchor entries from the page and enqueueing them for subsequent processing
+    /// </summary>
+    public class QueueSpider : IQueueSpider
     {
-        private readonly ILogger<CrawlFarm> _logger;
-        private readonly IUriQueue _uriQueue;
-        private readonly IProcessedSet _processedSet;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger<QueueSpider> _logger;
+        private readonly IUriQueue            _uriQueue;
+        private readonly IProcessedSet        _processedSet;
+        private readonly IServiceProvider     _serviceProvider;
 
         private readonly ManualResetEvent _manualResetEvent = new ManualResetEvent(false);
 
         private int _activeCrawlers;
 
-        public CrawlFarm
+        public QueueSpider
         (
-            ILogger<CrawlFarm> logger, 
-            IServiceProvider   serviceProvider, 
-            IUriQueue          uriQueue, 
-            IProcessedSet      processedSet
+            ILogger<QueueSpider> logger, 
+            IServiceProvider     serviceProvider, 
+            IUriQueue            uriQueue, 
+            IProcessedSet        processedSet
         )
         {
-            _logger = logger;
+            _logger          = logger;
             _serviceProvider = serviceProvider;
-            _uriQueue = uriQueue;
-            _processedSet = processedSet;
+            _uriQueue        = uriQueue;
+            _processedSet    = processedSet;
         }
 
-        public async Task Run(int maxDegreeOfParallelism = 1)
+        public async Task Crawl(int maxDegreeOfParallelism = 1)
         {
-            _logger.LogDebug($"Beginning Web Crawl");
-            _logger.LogDebug($"Maximum Degree Of Parallelism = {maxDegreeOfParallelism}");
+            _logger.LogInformation($"Beginning Web Crawl");
+            _logger.LogInformation($"Maximum Degree Of Parallelism = {maxDegreeOfParallelism}");
 
             var crawl = new ActionBlock<Anchor>(
                 async anchor =>
                 {
-                    var crawler = ActivatorUtilities.CreateInstance<WebCrawler>(_serviceProvider);
+                    var crawler = ActivatorUtilities.CreateInstance<Implementation.UriParser>(_serviceProvider);
                     var count = Interlocked.Increment(ref _activeCrawlers);
                     _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
                     crawler.Subscribe(this);
@@ -53,7 +56,7 @@ namespace Crawler.Lib.Service.implementation
                 },
                 new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism } );
 
-            _logger.LogDebug($"Starting");
+            _logger.LogInformation($"Starting");
 
             while (!_uriQueue.IsEmpty || _activeCrawlers != 0)
             {
@@ -67,7 +70,7 @@ namespace Crawler.Lib.Service.implementation
                 _manualResetEvent.WaitOne(500);
             }
 
-            _logger.LogDebug($"Exiting - active crawlers = {_activeCrawlers}");
+            _logger.LogInformation($"Exiting - active crawlers = {_activeCrawlers}");
         }
 
         public void OnNext(Anchor anchor)

@@ -4,8 +4,8 @@ using Crawler.Lib.Model;
 
 namespace Crawler.Lib.Service.Interface
 {
-    public interface IWebCrawler : IObservable<Anchor>
+    public interface IQueueSpider : IObserver<Anchor>
     {
-        Task Crawl(Anchor uri);
+        Task Crawl(int maxDegreeOfParallelism);
     }
 }

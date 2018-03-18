@@ -12,13 +12,13 @@ namespace Crawler
     public class Crawler : IObserver<Anchor>
     {
         private readonly ILogger<Crawler> _logger;
-        private readonly ICrawlFarm _crawlFarm;
+        private readonly IQueueSpider _queueSpider;
         private readonly IUriQueue _uriQueue;
 
-        public Crawler(ILogger<Crawler> logger, ICrawlFarm crawlFarm, IUriQueue uriQueue)
+        public Crawler(ILogger<Crawler> logger, IQueueSpider queueSpider, IUriQueue uriQueue)
         {
             _logger = logger;
-            _crawlFarm = crawlFarm;
+            _queueSpider = queueSpider;
             _uriQueue = uriQueue;
         }
 
@@ -28,7 +28,7 @@ namespace Crawler
             //_uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.thegravenimage.com/controltechnology") });
             _uriQueue.Enqueue(new Anchor { Uri = new Uri("http://www.appthem.com") });
 
-            await _crawlFarm.Run(3);
+            await _queueSpider.Crawl(3);
         }
 
         public void OnCompleted()

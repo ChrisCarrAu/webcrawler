@@ -8,7 +8,13 @@ Uses Visual Studio 2017, just load the solution and run the console app, Crawler
 
 Right now, the starting URI & number of crawl threads are hard coded.
 
-CrawlerFarm is an observable object - Crawler implements IObserver<Anchor> and subscribes to the UriQueue which queues the Uri's to process
+CrawlerFarm is an observable object - Crawler implements IObserver&lt;Anchor&gt; and subscribes to the UriQueue which queues the Uri's to process
+
+### Projects
+<ul>
+<li><b>Crawler</b> : Console App which uses Crawler.Lib to spider from a given site to a specified depth
+<li><b>Crawler.Lib</b> : .NET Core 2.0 library containing the crawler code
+</ul>
 
 ### Prerequisites
 

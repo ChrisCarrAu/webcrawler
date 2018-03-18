@@ -48,8 +48,8 @@ namespace Crawler
             services.AddSingleton<IProcessedSet, ProcessedSet>();
             services.AddSingleton<IUriQueue, ObservableUriQueue>();
             services.AddSingleton<IUriQueueListener, UriQueueListener>();
-            services.AddTransient<WebCrawler, WebCrawler>();
-            services.AddSingleton<ICrawlFarm, CrawlFarm>();
+            services.AddTransient<Lib.Service.Implementation.UriParser, Lib.Service.Implementation.UriParser>();
+            services.AddSingleton<IQueueSpider, QueueSpider>();
 
             var serviceProvider = services.BuildServiceProvider();
 

@@ -10,20 +10,17 @@ using System.Threading.Tasks;
 
 namespace Crawler.Lib.Service.Implementation
 {
-    public delegate void LinkFound(Anchor link);
-
     /// <summary>
-    /// Crawls a website, looking for anchors.
-    /// Implements IObservable<Uri> and returns Anchor URIs to Observers.
+    /// Crawls a document looking for anchors.
     /// </summary>
-    public class WebCrawler : IWebCrawler
+    public class UriParser : IUriParser
     {
         private readonly WebClient _webClient;
         private readonly List<IObserver<Anchor>> _observers;
 
-        private readonly ILogger<WebCrawler> _logger;
+        private readonly ILogger<UriParser> _logger;
 
-        public WebCrawler(ILogger<WebCrawler> logger)
+        public UriParser(ILogger<UriParser> logger)
         {
             _webClient = new WebClient();
             _observers = new List<IObserver<Anchor>>();
