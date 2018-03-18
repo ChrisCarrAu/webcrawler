@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Crawler.Lib.Model;
+using Crawler.Lib.Repository.Interface;
+using Crawler.Lib.Service.Interface;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using Crawler.Lib.Model;
-using Crawler.Lib.Repository.Interface;
-using Crawler.Lib.Service.Implementation;
-using Crawler.Lib.Service.Interface;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Crawler.Lib.Service.implementation
 {
@@ -48,7 +47,8 @@ namespace Crawler.Lib.Service.implementation
             var crawl = new ActionBlock<Anchor>(
                 async anchor =>
                 {
-                    var crawler = ActivatorUtilities.CreateInstance<Implementation.UriParser>(_serviceProvider);
+                    var crawler = _serviceProvider.GetRequiredService<IUriParser>();
+                    //var crawler = ActivatorUtilities.CreateInstance<Implementation.UriParser>(_serviceProvider);
                     var count = Interlocked.Increment(ref _activeCrawlers);
                     _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
                     crawler.Subscribe(this);

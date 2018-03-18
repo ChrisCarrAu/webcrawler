@@ -1,8 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-using Crawler.Lib.Model;
+﻿using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Interface;
 using Crawler.Lib.Service.Interface;
+using System;
 
 namespace Crawler.Lib.Service.Implementation
 {

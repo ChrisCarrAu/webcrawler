@@ -47,8 +47,8 @@ namespace Crawler
             // Crawler.Lib
             services.AddSingleton<IProcessedSet, ProcessedSet>();
             services.AddSingleton<IUriQueue, ObservableUriQueue>();
-            services.AddSingleton<IUriQueueListener, UriQueueListener>();
-            services.AddTransient<Lib.Service.Implementation.UriParser, Lib.Service.Implementation.UriParser>();
+            //services.AddSingleton<IUriQueueListener, UriQueueListener>();
+            services.AddTransient<IUriParser, Lib.Service.Implementation.UriParser>();
             services.AddSingleton<IQueueSpider, QueueSpider>();
 
             var serviceProvider = services.BuildServiceProvider();
