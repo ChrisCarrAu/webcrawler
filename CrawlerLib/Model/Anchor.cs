@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace Crawler.Lib.Model
@@ -14,33 +15,16 @@ namespace Crawler.Lib.Model
 
         public Exception Exception { get; set; }
 
-        public int JumpCount
+        public IEnumerable<string> Jumps
         {
             get
             {
-                var count = 0;
                 var myParent = Parent;
                 while (null != myParent)
                 {
-                    count++;
+                    yield return myParent.Uri.ToString();
                     myParent = myParent.Parent;
                 }
-                return count;
-            }
-        }
-
-        public List<string> Jumps
-        {
-            get
-            {
-                var jumps = new List<string> {Uri.ToString()};
-                var myParent = Parent;
-                while (null != myParent)
-                {
-                    jumps.Add(myParent.Uri.ToString());
-                    myParent = myParent.Parent;
-                }
-                return jumps;
             }
         }
     }

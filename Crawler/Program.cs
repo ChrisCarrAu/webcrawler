@@ -28,7 +28,7 @@ namespace Crawler
                 NLog.LogManager.Shutdown();
             });
 
-            Console.WriteLine("Press any key...");
+            Console.WriteLine("The Console is waiting on a keypress to close.");
             Console.ReadLine();
         }
 

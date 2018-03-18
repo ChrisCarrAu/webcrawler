@@ -3,6 +3,7 @@ using Crawler.Lib.Repository.Interface;
 using Crawler.Lib.Service.Interface;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -45,12 +46,12 @@ namespace Crawler
             var webException = anchor.Exception as WebException;
             if (null == webException)
             {
-                Console.WriteLine($"{anchor.JumpCount} : {anchor.Uri}");
+                Console.WriteLine($"{anchor.Jumps.Count()} : {anchor.Uri}");
             }
             else
             {
                 _logger.LogError($"{webException.Status.ToString()}\n{anchor.Uri}");
-                Console.WriteLine($"{anchor.JumpCount} : ({webException.Status.ToString()}) {anchor.Uri}");
+                Console.WriteLine($"{anchor.Jumps.Count()} : ({webException.Status.ToString()}) {anchor.Uri}");
             }
         }
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -58,7 +59,7 @@ namespace Crawler.Lib.Service.implementation
             {
                 while (_uriQueue.TryDequeue(out var anchor))
                 {
-                    if (true)   // TODO: Should we crawl this one?
+                    if (true)   // TODO: Ask caller if we should crawl this one?
                     {
                         await crawl.SendAsync<Anchor>(anchor);
                     }
@@ -74,7 +75,7 @@ namespace Crawler.Lib.Service.implementation
             if (_processedSet.Processed(anchor.Uri.ToString()))
                 return;
 
-            if (anchor.JumpCount > 2)
+            if (anchor.Jumps.Count() > 2)
                 return;
 
             _processedSet.Add(anchor.Uri.ToString());
