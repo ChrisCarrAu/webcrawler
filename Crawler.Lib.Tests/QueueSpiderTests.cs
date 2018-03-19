@@ -1,11 +1,10 @@
 using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Implementation;
-using Crawler.Lib.Service.implementation;
+using Crawler.Lib.Service.Implementation;
 using Crawler.Lib.Service.Interface;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
@@ -15,7 +14,7 @@ namespace Crawler.Lib.Tests
     public class QueueSpiderTests
     {
         [Fact]
-        public async void SpiderProcesses_Crawl_ReturnsAnchor()
+        public async void SpiderProcesses_Crawl_ReturnsCrawledAnchor()
         {
             var logger = new Mock<ILogger<QueueSpider>>();
             var serviceProvider = new Mock<IServiceProvider>();
@@ -31,6 +30,7 @@ namespace Crawler.Lib.Tests
             await queueSpider.Crawl();
 
             Assert.True(processedSet.Processed("http://testurl2.com/"));
+            Assert.True(uriQueue.IsEmpty);
         }
     }
 

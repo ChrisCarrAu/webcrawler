@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace Crawler.Lib.Service.implementation
+namespace Crawler.Lib.Service.Implementation
 {
     /// <summary>
     /// Given a queue of Uris, crawls the queue, retrieving anchor entries from the page and enqueueing them for subsequent processing

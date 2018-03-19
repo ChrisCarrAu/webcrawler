@@ -1,7 +1,5 @@
-﻿using Crawler.Lib.Model;
-using Crawler.Lib.Repository.Implementation;
+﻿using Crawler.Lib.Repository.Implementation;
 using Crawler.Lib.Repository.Interface;
-using Crawler.Lib.Service.implementation;
 using Crawler.Lib.Service.Implementation;
 using Crawler.Lib.Service.Interface;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,8 +40,10 @@ namespace Crawler
             services.AddSingleton<IProcessedSet, ProcessedSet>();
             services.AddSingleton<IUriQueue, ObservableUriQueue>();
             //services.AddSingleton<IUriQueueListener, UriQueueListener>();
-            services.AddTransient<IUriParser, Lib.Service.Implementation.UriParser>();
             services.AddSingleton<IQueueSpider, QueueSpider>();
+
+            services.AddTransient<IUriParser, Lib.Service.Implementation.UriParser>();
+            services.AddTransient<IWebClient, WebClient>();
 
             var serviceProvider = services.BuildServiceProvider();
 

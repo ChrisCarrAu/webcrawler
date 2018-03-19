@@ -15,17 +15,18 @@ namespace Crawler.Lib.Service.Implementation
     /// </summary>
     public class UriParser : IUriParser
     {
-        private readonly WebClient _webClient;
+        //private readonly WebClient _webClient;
         private readonly List<IObserver<Anchor>> _observers;
+        private readonly IWebClient _webClient;
 
         private readonly ILogger<UriParser> _logger;
 
-        public UriParser(ILogger<UriParser> logger)
+        public UriParser(ILogger<UriParser> logger, IWebClient webClient)
         {
-            _webClient = new WebClient();
-            _observers = new List<IObserver<Anchor>>();
-
             _logger = logger;
+            _webClient = webClient;
+
+            _observers = new List<IObserver<Anchor>>();
         }
 
         public async Task Crawl(Anchor anchor)
