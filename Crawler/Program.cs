@@ -19,16 +19,10 @@ namespace Crawler
             var servicesProvider = BuildDi();
             var crawler = servicesProvider.GetRequiredService<Crawler>();
 
-            Task.Factory.StartNew(async () =>
-            {
-                await crawler.Crawl();
-            }).ContinueWith(task =>
-            {
-                // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
-                NLog.LogManager.Shutdown();
-            });
+            Task.WaitAll(crawler.Crawl());
+            NLog.LogManager.Shutdown();
 
-            Console.WriteLine("The Console is waiting on a keypress to close.");
+            Console.WriteLine("Press Enter to close.");
             Console.ReadLine();
         }
 
