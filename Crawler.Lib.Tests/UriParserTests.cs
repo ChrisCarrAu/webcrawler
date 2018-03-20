@@ -12,25 +12,8 @@ using Xunit;
 
 namespace Crawler.Lib.Tests
 {
-    public class UriParserTests : IObserver<Anchor>
+    public class UriParserTests
     {
-        List<Anchor> _anchors = new List<Anchor>();
-
-        public void OnCompleted()
-        {
-            //
-        }
-
-        public void OnError(Exception error)
-        {
-            //
-        }
-
-        public void OnNext(Anchor anchor)
-        {
-            _anchors.Add(anchor);
-        }
-
         [Fact]
         public async void UriParser_GivenHtmlWith10Anchors_Returns10Anchors()
         {
@@ -50,10 +33,29 @@ namespace Crawler.Lib.Tests
                 .Returns(webHeaderCollection);            // ["content-type"].StartsWith(@"text/", StringComparison.Ordinal
 
             var uriParser = new Service.Implementation.UriParser(logger.Object, mockWebClient.Object);
-            uriParser.Subscribe(this);
+            var mockAnchors = new MockAnchors();
+            uriParser.Subscribe(mockAnchors);
             await uriParser.Crawl(new Model.Anchor { Uri = new System.Uri("http://mytesturi.com") });
 
-            Assert.True(_anchors.Count == 10);
+            Assert.True(mockAnchors.Count == 10);
+        }
+
+        private class MockAnchors : List<Anchor>, IObserver<Anchor>
+        {
+            public void OnCompleted()
+            {
+                //
+            }
+
+            public void OnError(Exception error)
+            {
+                //
+            }
+
+            public void OnNext(Anchor anchor)
+            {
+                Add(anchor);
+            }
         }
     }
 }
