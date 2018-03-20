@@ -14,6 +14,7 @@ CrawlerFarm is an observable object - Crawler implements IObserver&lt;Anchor&gt;
 <ul>
 <li><b>Crawler</b> : Console App which uses Crawler.Lib to spider from a given site to a specified depth
 <li><b>Crawler.Lib</b> : .NET Core 2.0 library containing the crawler code
+<li><b>Crawler.Lib.Tests</b> : Crawler code unit tests
 </ul>
 
 ### Prerequisites

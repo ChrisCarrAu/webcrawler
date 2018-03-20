@@ -15,10 +15,9 @@ namespace Crawler.Lib.Service.Implementation
     /// </summary>
     public class UriParser : IUriParser
     {
-        //private readonly WebClient _webClient;
         private readonly List<IObserver<Anchor>> _observers;
-        private readonly IWebClient _webClient;
 
+        private readonly IWebClient _webClient;
         private readonly ILogger<UriParser> _logger;
 
         public UriParser(ILogger<UriParser> logger, IWebClient webClient)
@@ -58,6 +57,7 @@ namespace Crawler.Lib.Service.Implementation
                                 Uri = new Uri(anchor.Uri, _anchor.Attributes["href"].Value),
                                 Parent = anchor
                             };
+
                             _observers.ForEach(observer => observer.OnNext(node));
                         }
                     }
@@ -65,11 +65,15 @@ namespace Crawler.Lib.Service.Implementation
             }
             catch (WebException e)
             {
+                _logger.LogError($"{anchor.Uri.ToString()}");
+                _logger.LogError($"{e.ToString()}");
                 _observers.ForEach(observer => observer.OnError(e));
                 anchor.Exception = e;
             }
             catch (ArgumentException arge)
             {
+                _logger.LogError($"{anchor.Uri.ToString()}");
+                _logger.LogError($"{arge.ToString()}");
                 _observers.ForEach(observer => observer.OnError(arge));
                 anchor.Exception = arge;
             }
