@@ -43,23 +43,15 @@ namespace Crawler.Lib.Service.Implementation
                     var htmlDocument = new HtmlDocument();
                     htmlDocument.LoadHtml(contents);
 
-                    var anchors = htmlDocument.DocumentNode.SelectNodes("//a");
-
-                    if (null == anchors)
-                        return;
-
-                    foreach (var _anchor in anchors)
+                    foreach (var _anchor in htmlDocument.AnchorReferences)
                     {
-                        if (_anchor.Attributes.Contains("href"))
+                        var node = new Anchor
                         {
-                            var node = new Anchor
-                            {
-                                Uri = new Uri(anchor.Uri, _anchor.Attributes["href"].Value),
-                                Parent = anchor
-                            };
+                            Uri = new Uri(anchor.Uri, _anchor),
+                            Parent = anchor
+                        };
 
-                            _observers.ForEach(observer => observer.OnNext(node));
-                        }
+                        _observers.ForEach(observer => observer.OnNext(node));
                     }
                 }
             }
