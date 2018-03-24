@@ -67,7 +67,7 @@ namespace Crawler.Lib.Service.Implementation
                         await crawl.SendAsync<Anchor>(anchor);
                     }
                 }
-                _manualResetEvent.WaitOne(10);
+                _manualResetEvent.WaitOne();
             }
 
             _logger.LogInformation($"Exiting - active crawlers = {_activeCrawlers}");
