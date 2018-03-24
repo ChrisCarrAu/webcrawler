@@ -48,9 +48,6 @@ namespace Crawler.Lib.Service.Implementation
                 async anchor =>
                 {
                     var crawler = _serviceProvider.GetRequiredService<IUriParser>();
-                    //var crawler = ActivatorUtilities.CreateInstance<Implementation.UriParser>(_serviceProvider);
-                    var count = Interlocked.Increment(ref _activeCrawlers);
-                    _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
                     crawler.Subscribe(this);
                     await crawler.Crawl(anchor);
                 },
@@ -64,10 +61,13 @@ namespace Crawler.Lib.Service.Implementation
                 {
                     if (true)   // TODO: Ask caller if we should crawl this one?
                     {
+                        var count = Interlocked.Increment(ref _activeCrawlers);
+                        _logger.LogDebug($"  -- INCREMEMT, Crawl Count = {count}");
+
                         await crawl.SendAsync<Anchor>(anchor);
                     }
                 }
-                _manualResetEvent.WaitOne(500);
+                _manualResetEvent.WaitOne(10);
             }
 
             _logger.LogInformation($"Exiting - active crawlers = {_activeCrawlers}");

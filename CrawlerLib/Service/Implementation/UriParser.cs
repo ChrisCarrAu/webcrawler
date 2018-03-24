@@ -1,7 +1,6 @@
 ﻿using Crawler.Lib.Model;
 using Crawler.Lib.Repository.Implementation;
 using Crawler.Lib.Service.Interface;
-using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
