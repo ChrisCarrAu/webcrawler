@@ -26,7 +26,7 @@ namespace Crawler.Lib.Service.Implementation
                 var anchorNodes = _htmlDocument.DocumentNode.SelectNodes("//a");
                 if (null == anchorNodes)
                 {
-                    return new List<string>();
+                    return Enumerable.Empty<string>();
                 }
                 return anchorNodes.Where(node => node.Attributes.Contains("href")).Select(node => node.Attributes["href"].Value);
             }
