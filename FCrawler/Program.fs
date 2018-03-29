@@ -1,8 +1,9 @@
 ﻿open FSharp.Data
+open System
 
 type SpiderUri = 
     { 
-        Address : string;
+        Address : Uri;
         Text : string option;
         Depth : int32 
     }
@@ -16,11 +17,14 @@ let main args =
     // Example:
     //Helpers.crawl "http://news.google.com" 25
 
+//    let crawledUri baseUri relative text = 
+//        { Address = new Uri(baseUri.Address, relative); Text = Some(text); Depth = baseUri.Depth }
+
     let parseAnchors (uri : SpiderUri) = 
-        HtmlDocument.Load(uri.Address).Descendants["a"]
+        HtmlDocument.Load(uri.Address.ToString()).Descendants["a"]
         |> Seq.choose ( fun htmlNode -> 
             htmlNode.TryGetAttribute("href")
-            |> Option.map (fun a -> { Text = Some(htmlNode.InnerText()); Address = a.Value(); Depth = uri.Depth + 1 } ) )
+            |> Option.map (fun a -> { Text = Some(htmlNode.InnerText()); Address = Uri(uri.Address, a.Value()); Depth = uri.Depth + 1 } ) )
 
     let rec spiderAgent = MailboxProcessor.Start(fun uriQueue->
         let rec crawlLoop() = async {
@@ -29,8 +33,8 @@ let main args =
             parseAnchors(uri)
             |> Seq.iter (fun f -> 
                 printfn "%A %d" f.Address f.Depth;
-//                if (f.Depth < 3) then 
-                spiderAgent.Post f
+                if (f.Depth < 2) then 
+                    spiderAgent.Post f
                 )
 
             return! crawlLoop()
@@ -39,20 +43,9 @@ let main args =
         crawlLoop()
     )
 
-    spiderAgent.Post { Address = "http://appthem.com"; Depth = 0; Text = None }
+    spiderAgent.Post { Address = Uri("http://appthem.com"); Depth = 0; Text = None }
     
-//    let count = spiderAgent.PostAndReply(fun replyChannel -> Get(replyChannel) )
-//    printfn "We got %d" count
-
-    parseAnchors { Address = "http://appthem.com"; Depth = 0; Text = None }
-    |> Seq.iter (fun f -> printfn "%A" f.Address)
-(*
-    async { let! html = Http.AsyncRequestString("http://appthem.com")
-        printfn "%d" html.Length } 
-    |> Async.Start
-
-    printfn "%A" "Electric boogaloo"
-*)    
+    Console.ReadLine() |> ignore
 
     0 // return an integer exit code
 
