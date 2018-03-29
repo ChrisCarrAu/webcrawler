@@ -5,7 +5,7 @@ type SpiderUri =
     { 
         Address : Uri;
         Text : string option;
-        crawlDepth : int32 
+        parent : SpiderUri option 
     }
 
 type SpiderResult =
@@ -17,9 +17,6 @@ type SpiderResult =
 [<EntryPoint>]
 let main args =
 
-    // Example:
-    //Helpers.crawl "http://news.google.com" 25
-
     let parseAnchors (uri : SpiderUri) = 
         HtmlDocument.Load(uri.Address.ToString()).Descendants["a"]
 
@@ -30,7 +27,12 @@ let main args =
             |> Option.map(fun h -> { htmlNode = htmlNode; href = h } ))
 
     let spiderUri ( spiderResult ) ( uribase : SpiderUri ) =
-        { Text = Some(spiderResult.htmlNode.InnerText()); Address = Uri(uribase.Address, spiderResult.href.Value()); crawlDepth = uribase.crawlDepth + 1 }
+        { Text = Some(spiderResult.htmlNode.InnerText()); Address = Uri(uribase.Address, spiderResult.href.Value()); parent = Some(uribase) }
+
+    let rec crawlDepth spiderUri =
+        match spiderUri.parent with
+        | None -> 0
+        | Some a -> crawlDepth a + 1
 
     let rec spiderAgent = MailboxProcessor.Start(fun uriQueue->
         let rec crawlLoop() = async {
@@ -40,8 +42,8 @@ let main args =
             |> parseAnchorLinks
             |> Seq.map (fun f -> spiderUri f uri)
             |> Seq.iter (fun f -> 
-                printfn "%A %d" f.Address f.crawlDepth;
-                if f.crawlDepth < 2 then 
+                printfn "%A %d" f.Address (crawlDepth f);
+                if crawlDepth f < 2 then 
                     spiderAgent.Post f
                 )
 
@@ -51,7 +53,7 @@ let main args =
         crawlLoop()
     )
 
-    spiderAgent.Post { Address = Uri("http://appthem.com"); crawlDepth = 0; Text = None }
+    spiderAgent.Post { Address = Uri("http://appthem.com"); parent = None; Text = None }
     //spiderAgent.Post { Address = Uri("https://www.bikesales.com.au"); crawlDepth = 0; Text = None }
     
     Console.ReadLine() |> ignore
