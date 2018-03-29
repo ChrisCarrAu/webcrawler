@@ -34,7 +34,7 @@ let main args =
         | None -> 0
         | Some a -> crawlDepth a + 1
 
-    let rec spiderAgent = MailboxProcessor.Start(fun uriQueue->
+    let spiderAgent = MailboxProcessor.Start(fun uriQueue->
         let rec crawlLoop() = async {
             let! uri = uriQueue.Receive()
             
@@ -44,7 +44,7 @@ let main args =
             |> Seq.iter (fun f -> 
                 printfn "%A %d" f.Address (crawlDepth f);
                 if crawlDepth f < 2 then 
-                    spiderAgent.Post f
+                    uriQueue.Post f
                 )
 
             return! crawlLoop()
