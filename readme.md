@@ -15,6 +15,7 @@ CrawlerFarm is an observable object - Crawler implements IObserver&lt;Anchor&gt;
 <li><b>Crawler</b> : Console App which uses Crawler.Lib to spider from a given site to a specified depth
 <li><b>Crawler.Lib</b> : .NET Core 2.0 library containing the crawler code
 <li><b>Crawler.Lib.Tests</b> : Crawler code unit tests
+<li><b>FCrawler</b> : Console App written in F# to spider from a given site to a specified depth
 </ul>
 
 ### Prerequisites
@@ -65,6 +66,7 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
+The C# projects depend on
 * [HtmlAgilityPack](http://html-agility-pack.net/) - An agile HTML parser 
 * [Microsoft.Extensions.DependencyInjection](https://www.asp.net/) - Dependency Management
 * [NLog](http://nlog-project.org/) - A logging platform for .NET with rich log routing and management capabilities

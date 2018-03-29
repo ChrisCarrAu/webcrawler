@@ -1,11 +1,12 @@
 ﻿open FSharp.Data
 open System
+open System.Collections.Generic
 
-type SpiderUri = 
+type SpiderNode = 
     { 
         Address : Uri;
         Text : string option;
-        parent : SpiderUri option 
+        parent : SpiderNode option 
     }
 
 type SpiderResult =
@@ -17,8 +18,11 @@ type SpiderResult =
 [<EntryPoint>]
 let main args =
 
-    let parseAnchors (uri : SpiderUri) = 
-        HtmlDocument.Load(uri.Address.ToString()).Descendants["a"]
+    let parseAnchors (uri : SpiderNode) = 
+        try
+            HtmlDocument.Load(uri.Address.ToString()).Descendants["a"]
+        with
+            | :? System.NotSupportedException as ex -> Seq.empty
 
     let parseAnchorLinks (anchors : seq<HtmlNode>) =
         anchors
@@ -26,7 +30,7 @@ let main args =
             htmlNode.TryGetAttribute("href")
             |> Option.map(fun h -> { htmlNode = htmlNode; href = h } ))
 
-    let spiderUri ( spiderResult ) ( uribase : SpiderUri ) =
+    let spiderUri ( spiderResult ) ( uribase : SpiderNode ) =
         { Text = Some(spiderResult.htmlNode.InnerText()); Address = Uri(uribase.Address, spiderResult.href.Value()); parent = Some(uribase) }
 
     let rec crawlDepth spiderUri =
@@ -34,17 +38,21 @@ let main args =
         | None -> 0
         | Some a -> crawlDepth a + 1
 
+    let crawledSet = HashSet<string>()
+
     let spiderAgent = MailboxProcessor.Start(fun uriQueue->
         let rec crawlLoop() = async {
             let! uri = uriQueue.Receive()
+
+            printfn "%A %d" uri.Address (crawlDepth uri);
             
             parseAnchors(uri) 
             |> parseAnchorLinks
             |> Seq.map (fun f -> spiderUri f uri)
             |> Seq.iter (fun f -> 
-                printfn "%A %d" f.Address (crawlDepth f);
-                if crawlDepth f < 2 then 
-                    uriQueue.Post f
+                if crawlDepth f < 4 then 
+                    if crawledSet.Add(f.Address.GetLeftPart(UriPartial.Path)) then
+                        uriQueue.Post f
                 )
 
             return! crawlLoop()
