@@ -46,7 +46,6 @@ namespace Crawler.Lib.Tests
                 Parent = anchor
             };
             _observers.ForEach(observer => observer.OnNext(node));
-
             _observers.ForEach(observer => observer.OnCompleted());
         }
 
