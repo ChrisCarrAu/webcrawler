@@ -22,7 +22,9 @@ let main args =
         try
             HtmlDocument.Load(uri.Address.ToString()).Descendants["a"]
         with
+            | :? System.ArgumentException as ex -> Seq.empty
             | :? System.NotSupportedException as ex -> Seq.empty
+            | :? System.Net.WebException as ex -> Seq.empty
 
     let parseAnchorLinks (anchors : seq<HtmlNode>) =
         anchors
@@ -62,7 +64,7 @@ let main args =
     )
 
     spiderAgent.Post { Address = Uri("http://appthem.com"); parent = None; Text = None }
-    //spiderAgent.Post { Address = Uri("https://www.bikesales.com.au"); crawlDepth = 0; Text = None }
+    //spiderAgent.Post { Address = Uri("https://www.bikesales.com.au"); parent = None; Text = None }
     
     Console.ReadLine() |> ignore
 
