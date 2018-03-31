@@ -1,0 +1,27 @@
+source https://api.nuget.org/v3/index.json
+framework: auto-detect
+references: strict
+
+clitool dotnet-xunit
+nuget Autofac
+nuget AzureFunctions.Autofac
+nuget FSharp.Core 
+nuget FSharp.Data 
+nuget HtmlAgilityPack 
+nuget Microsoft.Extensions.DependencyInjection 
+nuget Microsoft.Extensions.DependencyInjection.Abstractions
+nuget Microsoft.Extensions.Logging
+nuget Microsoft.Extensions.Logging.Abstractions
+nuget Microsoft.Extensions.Options
+nuget Microsoft.Extensions.Primitives
+nuget Microsoft.NET.Sdk.Functions
+nuget Microsoft.NET.Test.Sdk
+nuget Microsoft.Tpl.Dataflow
+nuget Moq
+nuget Newtonsoft.Json
+nuget Ninject
+nuget NLog
+nuget NLog.Extensions.Logging
+nuget System.Runtime.CompilerServices.Unsafe
+nuget xunit
+nuget xunit.runner.visualstudio

@@ -1,0 +1,11 @@
+HtmlAgilityPack
+Microsoft.Extensions.DependencyInjection
+Microsoft.Extensions.DependencyInjection.Abstractions
+Microsoft.Extensions.Logging
+Microsoft.Extensions.Logging.Abstractions
+Microsoft.Extensions.Options
+Microsoft.Extensions.Primitives
+Microsoft.Tpl.Dataflow
+Ninject
+NLog
+System.Runtime.CompilerServices.Unsafe

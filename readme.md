@@ -20,7 +20,13 @@ CrawlerFarm is an observable object - Crawler implements IObserver&lt;Anchor&gt;
 
 ### Prerequisites
 
-None
+* Visual Studio 2017 (v15.3+)
+	* .NET Desktop Development Workload
+	* Azure Development Workload
+	* .NET Core Cross-Platform Development Workload
+* AzureRM PowerShell Module (`Install-Module AzureRM`)
+* AzureAD PowerShell Module (`Install-Module AzureAD`)
+* (Azure CLI v2) (https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest)
 
 ### Installing
 

@@ -1,0 +1,6 @@
+Autofac
+AzureFunctions.Autofac
+HtmlAgilityPack
+Microsoft.Azure.WebJobs
+Microsoft.Extensions.Logging
+Newtonsoft.Json

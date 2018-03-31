@@ -1,12 +1,12 @@
-﻿open FSharp.Data
-open System
+﻿open System
 open System.Collections.Generic
+open FSharp.Data
 
 type SpiderNode = 
     { 
         Address : Uri;
         Text : string option;
-        parent : SpiderNode option 
+        parent : SpiderNode option;
     }
 
 type SpiderResult =
@@ -32,7 +32,7 @@ let main args =
             htmlNode.TryGetAttribute("href")
             |> Option.map(fun h -> { htmlNode = htmlNode; href = h } ))
 
-    let spiderUri ( spiderResult ) ( uribase : SpiderNode ) =
+    let spiderNode ( spiderResult ) ( uribase : SpiderNode ) =
         { Text = Some(spiderResult.htmlNode.InnerText()); Address = Uri(uribase.Address, spiderResult.href.Value()); parent = Some(uribase) }
 
     let rec crawlDepth spiderUri =
@@ -50,10 +50,10 @@ let main args =
             
             parseAnchors(uri) 
             |> parseAnchorLinks
-            |> Seq.map (fun f -> spiderUri f uri)
+            |> Seq.map (fun f -> spiderNode f uri)
             |> Seq.iter (fun f -> 
                 if crawlDepth f < 4 then 
-                    if crawledSet.Add(f.Address.GetLeftPart(UriPartial.Path)) then
+                    if crawledSet.Add(f.Address.GetLeftPart(UriPartial.Query)) then
                         uriQueue.Post f
                 )
 
@@ -63,7 +63,8 @@ let main args =
         crawlLoop()
     )
 
-    spiderAgent.Post { Address = Uri("http://appthem.com"); parent = None; Text = None }
+    //spiderAgent.Post { Address = Uri("http://appthem.com"); parent = None; Text = None }
+    spiderAgent.Post { Address = Uri("http://ozhog.com.au"); parent = None; Text = None }
     //spiderAgent.Post { Address = Uri("https://www.bikesales.com.au"); parent = None; Text = None }
     
     Console.ReadLine() |> ignore
